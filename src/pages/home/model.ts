@@ -1,30 +1,38 @@
 
-import request from '../../utils/request'
+import request from '@/utils/request'
+import { PROJECT } from '@/constants/apiConfig'
+import { HOME_NAMESCAPE }  from '@/constants/nameSpace'
 
 export default {
-  namespace: 'home',
+  namespace: HOME_NAMESCAPE,
   state:{
-    num:1
+    projectArr: []
   },
 
   reducers: {
-    add(state, {payload: data}){
-      console.log('add')
-      return { ...state, num: state.num+1 }
+    addProjectArr(state, {payload: data}){
+      return { ...state, projectArr: data }
     }
   },
 
   effects: {
     *getProject(action, { put, call }) {
-      let res = yield call(() => request({ url: 'http://localhost:3366/project' })) 
-      console.log(res)
+      let res = yield call(() => request({ url: PROJECT })) 
+      if(!res.payload){
+        return 
+      }
+      else {
+        yield put({ type: 'addProjectArr', payload: res.payload.data })
+      }
     }
   },
 
   subscriptions: {
-    history({ dispatch, history }){
-      console.log('history', history)
-      dispatch({ type: 'getProject' })
-    }
+    // history({ dispatch, history }){
+    //   if(history.location.pathname==='/home'){
+    //     dispatch({ type: 'getProject' })
+    //   }
+      
+    // }
   }
 }
